@@ -99,7 +99,7 @@ export default function Navbar() {
                             logOut();
                             setOpen(false);
                           }}
-                          className="w-full rounded-lg px-4 py-2 text-left text-sm hover:bg-gray-100"
+                          className="w-full rounded-lg px-4 py-2 text-left text-sm text-red-500 hover:bg-red-50"
                         >
                           Logout
                         </button>

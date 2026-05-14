@@ -1,14 +1,15 @@
 import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { GiSpinningRibbons } from "react-icons/gi";
 import useAuth from "../../hooks/useAuth";
 
 const Register = () => {
     const { createUser, signInWithGoogle, updateUserProfile } = useAuth();
-
+    const location = useLocation();
+    const destination = location.state?.from || "/";
     const { register, handleSubmit, formState: { errors } } = useForm()
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate();
@@ -31,7 +32,7 @@ const Register = () => {
         
             toast.success("Registration successful");
 
-            navigate("/");
+            navigate(destination);
         }
         catch (error) {
             toast.error(error.message);
@@ -47,7 +48,7 @@ const Register = () => {
             setLoading(false);
             await signInWithGoogle();
             toast.success("Registration successful");
-            navigate("/");
+            navigate(destination);
         }
         catch (error) {
             toast.error(error.message);

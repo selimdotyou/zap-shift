@@ -1,17 +1,19 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm  } from "react-hook-form"
 import useAuth from "../../hooks/useAuth";
 import { toast } from "react-toastify";
 const Login = () => {
     const {signIn , signInWithGoogle} = useAuth();
+    const location = useLocation();
     const navigate = useNavigate();
+     const destination = location.state?.from || "/";
     const { register, handleSubmit, formState: { errors }} = useForm()
 
     const handleLogin = async (data) => {
             console.log(data);
             try {
                 await signIn(data.email, data.password);
-                navigate("/");
+                navigate(destination);
             } catch (error) {
                 toast.error(error.message);
             }
@@ -20,7 +22,7 @@ const Login = () => {
     const handleGoogleLogin = async () => {
         try {
             await signInWithGoogle();
-            navigate("/");
+            navigate(destination);
         } catch (error) {
             toast.error(error.message);
         }

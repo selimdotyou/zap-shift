@@ -26,6 +26,9 @@ async function run() {
     const database = client.db("zap-shift")
     const reviewCollection = database.collection("reviews")
     const serviceCenterCollection = database.collection("serviceCenter")
+    // parcel collection will be added later when needed
+    const parcelCollection = database.collection("parcels")
+
     // get all reviews
     app.get("/reviews", async (req, res) => {
         const cursor = reviewCollection.find();
@@ -36,6 +39,25 @@ async function run() {
     // get all service centers
     app.get("/service-centers", async (req, res) => {
         const cursor = serviceCenterCollection.find();
+        const result = await cursor.toArray();
+        res.send(result);
+    })
+
+    // parcel related api start here
+    app.post('/parcels', async (req, res) => {
+       const parcelData = req.body;
+       const result = await parcelCollection.insertOne(parcelData);
+       res.send(result);
+    })
+
+    // get parcel by query email
+    app.get('/parcels', async (req, res) => {
+        const email = req.query.email;
+        const query = {}
+        if(email) {
+            query.senderEmail = email;
+        }
+        const cursor = parcelCollection.find(query);
         const result = await cursor.toArray();
         res.send(result);
     })

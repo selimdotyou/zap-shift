@@ -16,7 +16,9 @@ import Login from "../Page/Login/Login";
 import ForgotPassword from "../Page/Login/ForgotPassword";
 import Rider from "../Page/Rider/Rider";
 import PrivateRoute from "./PrivateRoute";
-import DashboardLayOut from "./DashboardLayOut";
+import DashboardLayOut from "../LayOut/DashboardLayOut";
+import Dashboard from "../Page/Dashboard/Dashboard/Dashboard";
+import SendParcel from "../Page/Dashboard/SentParcel/SendParcel";
 
 
 let router = createBrowserRouter([
@@ -79,7 +81,17 @@ let router = createBrowserRouter([
   // dashboard route will be here
   {
     path: '/dashboard',
-    element: <DashboardLayOut />
+    element: <PrivateRoute><DashboardLayOut /></PrivateRoute>,
+    children: [
+      {
+        index: true,
+        element: <Dashboard />
+      },
+      {
+        path: 'add-parcel',
+        element: <SendParcel />
+      }
+    ]
   }
 ]);
 
