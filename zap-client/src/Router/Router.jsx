@@ -14,6 +14,9 @@ import AuthLayOut from "../LayOut/AuthLayOut";
 import Register from "../Page/Register/Register";
 import Login from "../Page/Login/Login";
 import ForgotPassword from "../Page/Login/ForgotPassword";
+import Rider from "../Page/Rider/Rider";
+import PrivateRoute from "./PrivateRoute";
+import DashboardLayOut from "./DashboardLayOut";
 
 
 let router = createBrowserRouter([
@@ -47,7 +50,11 @@ let router = createBrowserRouter([
       },
       {
         path: '/pricing',
-        element: <Pricing />
+        element: <PrivateRoute><Pricing /></PrivateRoute>
+      },
+      {
+        path: '/be-a-rider',
+        element: <PrivateRoute><Rider /></PrivateRoute>
       }
     ]
   },
@@ -68,7 +75,13 @@ let router = createBrowserRouter([
         element: <ForgotPassword />
       }
     ]
+  },
+  // dashboard route will be here
+  {
+    path: '/dashboard',
+    element: <DashboardLayOut />
   }
 ]);
+
 
 export default router;

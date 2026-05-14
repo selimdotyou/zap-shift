@@ -5,114 +5,145 @@ import useAuth from "../../hooks/useAuth";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+
   const { user, logOut } = useAuth();
 
-  return (
-    <nav className="relative bg-white border-b border-gray-200">
-      <div className="container px-6 py-3 mx-auto md:flex">
-        <div className="flex items-center justify-between">
-          <NavLink to="/">
-            <div className="flex items-center">
-              <img src={LogoImg} alt="Logo" className="w-12 h-8 mr-2" />
-              <span className="text-xl -ms-5 font-bold text-gray-800">ZapShift</span>
-            </div>
-          </NavLink>
+  const navLinks = (
+    <>
+      {[
+        "Services",
+        "Coverage",
+        "About",
+        "Pricing",
+        "Blog",
+        "Be A Rider",
+        "Contact",
+      ].map((item, index) => (
+        <NavLink
+          key={index}
+          to={
+            item === "Services"
+              ? "/"
+              : `/${item.toLowerCase().replace(/\s+/g, "-")}`
+          }
+          className={({ isActive }) =>
+            `px-3 py-2 rounded-lg transition duration-200 ${
+              isActive
+                ? "bg-blue-600 text-white"
+                : "text-gray-700 hover:bg-gray-100"
+            }`
+          }
+        >
+          {item}
+        </NavLink>
+      ))}
+    </>
+  );
 
-          {/* Mobile button */}
-          <div className="flex md:hidden">
+  return (
+    <nav className="sticky top-0 z-50 bg-white bg-opacity-60 backdrop-blur-sm">
+      <div className="container mx-auto px-4 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2">
+            <img src={LogoImg} alt="logo" className="h-10 w-10" />
+
+            <span className="text-xl font-bold text-gray-800">
+              ZapShift
+            </span>
+          </Link>
+
+          {/* Desktop Menu */}
+          <div className="hidden lg:flex items-center gap-2">
+            {navLinks}
+          </div>
+
+          {/* Right Side */}
+          <div className="flex items-center gap-3">
+            {/* User */}
+            {user ? (
+              <div className="relative">
+                {/* Avatar */}
+                <button
+                  onClick={() => setOpen(!open)}
+                  className="h-10 w-10 overflow-hidden rounded-full border"
+                >
+                  <img
+                    src={
+                      user?.photoURL ||
+                      "https://via.placeholder.com/150"
+                    }
+                    alt="profile"
+                    className="h-full w-full object-cover"
+                  />
+                </button>
+
+                {/* Dropdown */}
+                {open && (
+                  <div className="absolute right-0 mt-3 w-48 rounded-xl border bg-white p-2 ">
+                    <ul className="space-y-1">
+                      <li>
+                        <Link
+                          to="/dashboard"
+                          className="block rounded-lg px-4 py-2 text-sm hover:bg-gray-100"
+                          onClick={() => setOpen(false)}
+                        >
+                          Dashboard
+                        </Link>
+                      </li>
+
+                      <li>
+                        <button
+                          onClick={() => {
+                            logOut();
+                            setOpen(false);
+                          }}
+                          className="w-full rounded-lg px-4 py-2 text-left text-sm hover:bg-gray-100"
+                        >
+                          Logout
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="rounded-lg border border-gray-300 px-4 py-2 text-sm hover:bg-gray-100"
+                >
+                  Login
+                </Link>
+
+                <Link
+                  to="/register"
+                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+                >
+                  Register
+                </Link>
+              </>
+            )}
+
+            {/* Mobile Menu Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-500 focus:outline-none"
+              className="lg:hidden text-2xl"
             >
-              {isOpen ? (
-                <span className="text-2xl">✕</span>
-              ) : (
-                <span className="text-2xl">☰</span>
-              )}
+              {isOpen ? "✕" : "☰"}
             </button>
           </div>
         </div>
 
-        {/* Menu */}
-        <div
-          className={`${isOpen ? "translate-x-0 opacity-100" : "opacity-0 -translate-x-full"
-            } absolute inset-x-0 z-20 w-full px-6 py-4 transition-all duration-300 bg-white  md:mt-0 md:p-0 md:top-0 md:relative md:opacity-100 md:translate-x-0 md:flex md:items-center md:justify-between`}
-        >
-          <div className="flex flex-col px-2 -mx-4 md:flex-row md:mx-10 md:py-0">
-            <NavLink to="/services" className={({ isActive }) =>
-              `px-2.5 py-2 rounded-lg transition-colors duration-200 ${isActive
-                ? "bg-blue-600 text-white"
-                : "hover:bg-gray-100 text-gray-700"
-              }`
-            }>
-              Services
-            </NavLink>
-            <NavLink to="/coverage" className={({ isActive }) =>
-              `px-2.5 py-2 rounded-lg transition-colors duration-200 ${isActive
-                ? "bg-blue-600 text-white"
-                : "hover:bg-gray-100 text-gray-700"
-              }`
-            }>
-              Coverage
-            </NavLink>
-            <NavLink to="/about" className={({ isActive }) =>
-              `px-2.5 py-2 rounded-lg transition-colors duration-200 ${isActive
-                ? "bg-blue-600 text-white"
-                : "hover:bg-gray-100 text-gray-700"
-              }`
-            }>
-              About Us
-            </NavLink>
-            <NavLink to="/pricing" className={({ isActive }) =>
-              `px-2.5 py-2 rounded-lg transition-colors duration-200 ${isActive
-                ? "bg-blue-600 text-white"
-                : "hover:bg-gray-100 text-gray-700"
-              }`
-            }>
-              Pricing
-            </NavLink>
-            <NavLink to="/blog" className={({ isActive }) =>
-              `px-2.5 py-2 rounded-lg transition-colors duration-200 ${isActive
-                ? "bg-blue-600 text-white"
-                : "hover:bg-gray-100 text-gray-700"
-              }`
-            }>
-              Blog
-            </NavLink>
-            <NavLink to="/contact" className={({ isActive }) =>
-              `px-2.5 py-2 rounded-lg transition-colors duration-200 ${isActive
-                ? "bg-blue-600 text-white"
-                : "hover:bg-gray-100 text-gray-700"
-              }`
-            }>
-              Contact
-            </NavLink>
+        {/* Mobile Menu */}
+        {isOpen && (
+          <div className="lg:hidden pb-4">
+            <div className="flex flex-col gap-2">
+              {navLinks}
+            </div>
           </div>
-
-          {/* Search */}
-          {
-            user ? (
-              // dashboard and logout
-              <div className="relative mt-4 md:mt-0">
-                <Link to="/dashboard" className="px-4 py-2 text-sm text-gray-600 border border-gray-600 rounded-lg hover:bg-gray-600 hover:text-white">
-                  Dashboard
-                </Link>
-                <button onClick={logOut} className="ml-2 px-4 py-2 text-sm text-gray-600 border border-gray-600 rounded-lg hover:bg-gray-600 hover:text-white">
-                  Logout
-                </button>
-              </div>
-            ) :
-              <div className="relative mt-4 md:mt-0">
-                <Link to="/login" className="px-4 py-2 text-sm text-gray-600 border border-gray-600 rounded-lg hover:bg-gray-600 hover:text-white">
-                  Login
-                </Link>
-                <Link to="/register" className="ml-2 px-4 py-2 text-sm text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-600 hover:text-white">
-                  Register
-                </Link>
-              </div>
-          }
-
-        </div>
+        )}
       </div>
     </nav>
   );
