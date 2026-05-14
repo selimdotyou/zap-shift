@@ -1,6 +1,65 @@
-import { Link } from "react-router-dom";
+import axios from "axios";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { GiSpinningRibbons } from "react-icons/gi";
+import useAuth from "../../hooks/useAuth";
 
 const Register = () => {
+    const { createUser, signInWithGoogle, updateUserProfile } = useAuth();
+
+    const { register, handleSubmit, formState: { errors } } = useForm()
+    const [loading, setLoading] = useState(true)
+    const navigate = useNavigate();
+    const handleRegister = async (data) => {
+        const formData = new FormData();
+        formData.append("image", data.profile[0]);
+
+        try {
+            
+            const { data: imgUrl } = await axios.post(
+                `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMG_UPLOAD_URL_API}`,
+                formData
+            );
+
+            const profileImageUrl = imgUrl.data.url;
+
+            await createUser(data.email, data.password);
+
+            await updateUserProfile(data.name, profileImageUrl);
+        
+            toast.success("Registration successful");
+
+            navigate("/");
+        }
+        catch (error) {
+            toast.error(error.message);
+        }
+        finally {
+            setLoading(false);
+        }
+    };
+
+    // Handle Google Register
+    const handleGoogleRegister = async () => {
+        try {
+            setLoading(false);
+            await signInWithGoogle();
+            toast.success("Registration successful");
+            navigate("/");
+        }
+        catch (error) {
+            toast.error(error.message);
+        }
+        finally {
+            setLoading(true);
+        }
+    }
+
+
+
+
     return (
         <div className="min-h-screen py-7 flex items-center justify-center px-4">
             <div className="w-full">
@@ -14,7 +73,7 @@ const Register = () => {
                     Register with ZapShift
                 </p>
 
-                <form>
+                <form onSubmit={handleSubmit(handleRegister)}>
                     {/* Profile Upload */}
                     <div className="mb-8">
                         <label
@@ -29,7 +88,11 @@ const Register = () => {
                             name="profile"
                             id="profile"
                             className="hidden"
+                            {...register("profile", { required: "Profile image is required" })}
                         />
+                        {
+                            errors.profile && <p className="text-red-500 mt-1">{errors.profile.message}</p>
+                        }
                     </div>
 
                     {/* Name */}
@@ -43,7 +106,11 @@ const Register = () => {
                             placeholder="Name"
                             name="name"
                             className="w-full px-4 py-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-lime-400"
+                            {...register("name", { required: "Name is required" })}
                         />
+                        {
+                            errors.name && <p className="text-red-500 mt-1">{errors.name.message}</p>
+                        }
                     </div>
 
                     {/* Email */}
@@ -56,8 +123,12 @@ const Register = () => {
                             type="email"
                             placeholder="Email"
                             name="email"
+                            {...register("email", { required: "Email is required" })}
                             className="w-full px-4 py-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-lime-400"
                         />
+                        {
+                            errors.email && <p className="text-red-500 mt-1">{errors.email.message}</p>
+                        }
                     </div>
 
                     {/* Password */}
@@ -70,14 +141,23 @@ const Register = () => {
                             type="password"
                             placeholder="Password"
                             name="password"
+                            {
+                            ...register("password", { required: "Password is required", minLength: { value: 6, message: "Password must be at least 6 characters" } })
+                            }
                             className="w-full px-4 py-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-lime-400"
                         />
+                        {
+                            errors.password && <p className="text-red-500 mt-1">{errors.password.message}</p>
+                        }
                     </div>
 
                     {/* Register Button */}
-                    <button className="w-full bg-lime-400 hover:bg-lime-500 transition-all duration-200 text-black font-semibold py-3 rounded-xl mb-5">
-                        Register
-                    </button>
+                    {
+                        loading ? <button className="w-full bg-lime-400 hover:bg-lime-500 transition-all duration-200 text-black font-semibold py-3 rounded-xl mb-5">
+                            Register
+                        </button> :
+                            <GiSpinningRibbons className="text-2xl animate-spin" />
+                    }
                 </form>
 
                 {/* Login */}
@@ -94,7 +174,7 @@ const Register = () => {
                 </div>
 
                 {/* Google Register */}
-                <button className="w-full flex items-center justify-center gap-3 bg-gray-100 hover:bg-gray-200 transition-all duration-200 py-3 rounded-xl text-lg font-medium">
+                <button onClick={handleGoogleRegister} className="w-full flex items-center justify-center gap-3 bg-gray-100 hover:bg-gray-200 transition-all duration-200 py-3 rounded-xl text-lg font-medium">
                     <img
                         src="https://www.svgrepo.com/show/475656/google-color.svg"
                         alt="google"

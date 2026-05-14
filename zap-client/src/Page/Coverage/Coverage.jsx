@@ -1,12 +1,14 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { useEffect, useRef, useState } from "react";
 
 import L from "leaflet";
 
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { useRef } from "react";
 
 // Fix leaflet default marker icon issue
 delete L.Icon.Default.prototype._getIconUrl;
@@ -18,33 +20,16 @@ L.Icon.Default.mergeOptions({
 });
 
 const Coverage = () => {
-    const position = [23.8103, 90.4125];
-
-    const [serviceCenters, setServiceCenters] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const position = [23.685, 90.3563]; // Center of Bangladesh
     const mapRef = useRef(null);
-    // Fetch service centers
-    const fetchServiceCenters = async () => {
-        try {
-            const response = await fetch(
-                "http://localhost:5000/service-centers"
-            );
-
-            const data = await response.json();
-
-            setServiceCenters(data);
-            setLoading(false);
-        } catch (error) {
-            console.error("Error fetching service centers:", error);
-            setLoading(false);
+    
+    const { data: serviceCenters, isLoading} = useQuery({
+        queryKey: ['serviceCenters'],
+        queryFn: async () => {
+            const { data } = await axios.get("http://localhost:5000/service-centers");
+            return data;
         }
-    };
-
-    useEffect(() => {
-        fetchServiceCenters();
-    }, []);
-
-    console.log(serviceCenters);
+   })
     const handleSearch = (e) => {
         e.preventDefault();
         const searchTerm = e.target.search.value.toLowerCase();
@@ -60,7 +45,7 @@ const Coverage = () => {
         };
     }
 
-    if (loading) {
+    if (isLoading) {
         return (
             <div className="container mx-auto px-4 py-8">
                 <h1 className="text-2xl font-bold mb-4">

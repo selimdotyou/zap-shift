@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import LogoImg from "../../assets/logo.png";
+import useAuth from "../../hooks/useAuth";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const { user, logOut } = useAuth();
 
   return (
     <nav className="relative bg-white border-b border-gray-200">
@@ -88,14 +90,28 @@ export default function Navbar() {
           </div>
 
           {/* Search */}
-          <div className="relative mt-4 md:mt-0">
-            <Link to="/login" className="px-4 py-2 text-sm text-gray-600 border border-gray-600 rounded-lg hover:bg-gray-600 hover:text-white">
-              Login
-            </Link>
-            <Link to="/register" className="ml-2 px-4 py-2 text-sm text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-600 hover:text-white">
-              Register
-            </Link>
-          </div>
+          {
+            user ? (
+              // dashboard and logout
+              <div className="relative mt-4 md:mt-0">
+                <Link to="/dashboard" className="px-4 py-2 text-sm text-gray-600 border border-gray-600 rounded-lg hover:bg-gray-600 hover:text-white">
+                  Dashboard
+                </Link>
+                <button onClick={logOut} className="ml-2 px-4 py-2 text-sm text-gray-600 border border-gray-600 rounded-lg hover:bg-gray-600 hover:text-white">
+                  Logout
+                </button>
+              </div>
+            ) :
+              <div className="relative mt-4 md:mt-0">
+                <Link to="/login" className="px-4 py-2 text-sm text-gray-600 border border-gray-600 rounded-lg hover:bg-gray-600 hover:text-white">
+                  Login
+                </Link>
+                <Link to="/register" className="ml-2 px-4 py-2 text-sm text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-600 hover:text-white">
+                  Register
+                </Link>
+              </div>
+          }
+
         </div>
       </div>
     </nav>

@@ -1,28 +1,18 @@
-import { useEffect, useState } from "react";
 import CustomerImg from "../../assets/customer-top.png";
 import axios from "axios";
 import ReviewSection from "./ReviewSection";
+import { useQuery } from "@tanstack/react-query";
 const CustomerReview = () => {
-    const [reviewData, setReviewData] = useState();
-    const [loading, setLoading] = useState(true);
-    // Fetch review data from the server
-    const fetchReviews = async () => {
-        try {
+    
+    const { data: reviewData, isLoading } = useQuery({
+        queryKey: ['reviews'],
+        queryFn: async () => {
             const { data } = await axios.get("http://localhost:5000/reviews");
-
-            setReviewData(data);
-            setLoading(false);
-        } catch (error) {
-            console.error("Error fetching reviews:", error);
-            setLoading(false);
+            return data;
         }
-    };
+    });
 
-    useEffect(() => {
-        fetchReviews();
-    }, []);
-
-    if (loading) {
+    if (isLoading) {
         return <div className="text-center py-8">Loading reviews...</div>;
     }
 

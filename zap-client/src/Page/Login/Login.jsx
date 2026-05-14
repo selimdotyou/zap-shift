@@ -1,6 +1,31 @@
-import { Link } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
+import { useForm  } from "react-hook-form"
+import useAuth from "../../hooks/useAuth";
+import { toast } from "react-toastify";
 const Login = () => {
+    const {signIn , signInWithGoogle} = useAuth();
+    const navigate = useNavigate();
+    const { register, handleSubmit, formState: { errors }} = useForm()
+
+    const handleLogin = async (data) => {
+            console.log(data);
+            try {
+                await signIn(data.email, data.password);
+                navigate("/");
+            } catch (error) {
+                toast.error(error.message);
+            }
+    }
+
+    const handleGoogleLogin = async () => {
+        try {
+            await signInWithGoogle();
+            navigate("/");
+        } catch (error) {
+            toast.error(error.message);
+        }
+    }
+    
     return (
         <div className="mt-3 flex items-center justify-center ">
             <div className="w-full bg-white p-8 rounded-2xl">
@@ -12,7 +37,7 @@ const Login = () => {
                     Login with ZapShift
                 </p>
 
-                <form>
+                <form onSubmit={handleSubmit(handleLogin)} className="mb-5">
                     {/* Email */}
                     <div className="mb-5">
                         <label className="block text-lg font-medium text-gray-800 mb-2">
@@ -23,8 +48,12 @@ const Login = () => {
                             type="email"
                             placeholder="Email"
                             name="email"
+                            {...register("email", { required: "Email is required" })}
                             className="w-full px-4 py-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-lime-400"
                         />
+                        {
+                            errors.email && <p className="text-red-500 mt-1">{errors.email.message}</p>
+                        }
                     </div>
 
                     {/* Password */}
@@ -37,8 +66,12 @@ const Login = () => {
                             type="password"
                             placeholder="Password"
                             name="password"
+                            {...register("password", { required: "Password is required" })}
                             className="w-full px-4 py-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-lime-400"
                         />
+                        {
+                            errors.password && <p className="text-red-500 mt-1">{errors.password.message}</p>
+                        }
                     </div>
 
                     {/* Forgot password */}
@@ -70,7 +103,7 @@ const Login = () => {
                 </div>
 
                 {/* Google Login */}
-                <button className="w-full flex items-center justify-center gap-3 bg-gray-100 hover:bg-gray-200 transition-all duration-200 py-3 rounded-xl text-lg font-medium">
+                <button onClick={handleGoogleLogin} className="w-full flex items-center justify-center gap-3 bg-gray-100 hover:bg-gray-200 transition-all duration-200 py-3 rounded-xl text-lg font-medium">
                     <img
                         src="https://www.svgrepo.com/show/475656/google-color.svg"
                         alt="google"
