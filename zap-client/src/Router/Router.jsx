@@ -19,6 +19,11 @@ import PrivateRoute from "./PrivateRoute";
 import DashboardLayOut from "../LayOut/DashboardLayOut";
 import Dashboard from "../Page/Dashboard/Dashboard/Dashboard";
 import SendParcel from "../Page/Dashboard/SentParcel/SendParcel";
+import Deliveries from "../Page/Dashboard/Deliveries/Deliveries";
+import ParcelDetails from "../Page/Dashboard/Deliveries/ParcelDetails";
+import Payment from "../Page/Dashboard/Payment/Payment";
+import PaymentSuccess from "../Page/Dashboard/Payment/PaymentSuccess";
+import PaymentCancel from "../Page/Dashboard/Payment/PaymentCancel";
 
 
 let router = createBrowserRouter([
@@ -90,6 +95,26 @@ let router = createBrowserRouter([
       {
         path: 'add-parcel',
         element: <SendParcel />
+      },
+      {
+        path: 'deliveries',
+        element: <Deliveries />
+      },
+      {
+        path: 'deliveries/:id',
+        element: <ParcelDetails />
+      },
+      {
+        path: 'payment/:id',
+        element: <Payment />
+      },
+      {
+        path: 'payments-success',
+        element: <PaymentSuccess />
+      },
+      {
+        path: 'payments-cancel',
+        element: <PaymentCancel />
       }
     ]
   }
